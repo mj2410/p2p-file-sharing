@@ -39,21 +39,23 @@ public class ClientHandler implements Runnable {
 
     public void search(String file) throws IOException {
         for (ClientHandler clientHandler : Server.getHandlers()){
-            if(clientHandler.find(file)){
-                dataOutputStream.writeUTF();
+            String ipOfPeer = clientHandler.find(file);
+            if(ipOfPeer != null){
+                dataOutputStream.writeUTF(ipOfPeer);
                 return;
             }
         }
         dataOutputStream.writeUTF("notFound");
     }
 
-    public boolean find(String str) throws IOException {
+    public String find(String str) throws IOException {
             dataOutputStream.writeUTF("haveYou?");
             dataOutputStream.flush();
             dataOutputStream.writeUTF(str);
             dataOutputStream.flush();
-            if (dataInputStream.readUTF().equals("yes"))
-                return true;
-        return false;
+            if (dataInputStream.readUTF().equals("yes")) {
+                return dataInputStream.readUTF();
+            }
+        return null;
     }
 }

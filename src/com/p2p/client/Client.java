@@ -10,27 +10,19 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class client {
+public class Client {
     private Peer peer;
-    private String location;
+    private static String location = System.getProperty("user.home") + File.separator + "SharedFiles";
+    private String pairId;
+    private static String serverIp = "127.0.0.1";
 
     public void connectServer() throws IOException {
-            Socket socket = new Socket(Server.serverID,Server.defaultPort);
+            Socket socket = new Socket(serverIp, 3434);
             peer = new Peer(socket);
             new Thread(peer).start();
     }
 
-//    public String getId() {
-//        try {
-//            return InetAddress.getLocalHost().getHostAddress();
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
     public void disconnect() {
-
     }
 
     public Peer getPeer() {
@@ -43,9 +35,23 @@ public class client {
 
     public void search(String string) {
         try {
-            peer.search(string);
+            pairId = peer.search(string);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    public static String getLocation() {
+        return location;
+    }
+
+    public static void setLocation(String location) {
+        Client.location = location;
+    }
+
+    public void download() {
+        Thread thread = new Thread(new Download(pairId));
+        thread.start();
+    }
+
 }

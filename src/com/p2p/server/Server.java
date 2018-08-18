@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 public class Server {
     private ServerSocket serverSocket;
     private static ArrayList<ClientHandler> handlers;
-    public static String serverID = "127.0.0.1";
+    public static String serverIP = "127.0.0.1";
     public static final int defaultPort = 3434;
     private ExecutorService pool = Executors.newCachedThreadPool();
 
@@ -27,15 +27,6 @@ public class Server {
             }
         }
     }
-
-
-    //start peer runnable
-
-    //search : call search method of each peer and return random id or false and call method listen of that id to accept a socket
-    // and when the socket accepted the break the loop.
-
-    //
-
 
     public static ArrayList<ClientHandler> getHandlers() {
         return handlers;
