@@ -20,13 +20,16 @@ public class Peer implements Runnable {
     private ArrayList<File> files;
     private String pairIp;
     private ExecutorService pool = Executors.newCachedThreadPool();
+    private Client client;
 
 
-    public Peer(Socket socket) {
+    public Peer(Socket socket, Client client) {
         this.socket = socket;
+        this.client = client;
         try {
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
             dataInputStream = new DataInputStream(socket.getInputStream());
+            dataOutputStream.writeUTF(InetAddress.getLocalHost().getHostAddress());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,26 +38,18 @@ public class Peer implements Runnable {
 
     @Override
     public void run() {
-        Listener listener = null;
+        String answer = "no";
         while (true) {
             try {
                 String massage = dataInputStream.readUTF();
-                String answer = "no";
+                System.out.println("client got massage : " + massage);
                 switch (massage) {
-                    case "haveYou?":
-                        for (File file : files) {
-                            if (file.getName().equals(dataInputStream.readUTF())) {
-                                answer = "yes";
-                                listener = new Listener(new File(Client.getLocation()));
-                                break;
-                            }
-                            answer = "no";
-                        }
-                        dataOutputStream.writeUTF(answer);
-                        if (answer.equals("yes")) {
-                            dataOutputStream.writeUTF(InetAddress.getLocalHost().getHostAddress());
-                            pool.execute(listener);
-                        }
+                    case "pairIp":
+                        client.setPairIp(dataInputStream.readUTF());
+                        massage = dataInputStream.readUTF();
+                        for (File file : files)
+                            if (file.getName().equals(massage))
+                                new Thread(new Listener(file,client.getPort())).start();
                         break;
                 }
             } catch (IOException e) {
@@ -63,18 +58,22 @@ public class Peer implements Runnable {
         }
     }
 
-    public String search(String fileName) throws IOException {
+    public void search(String fileName) throws IOException {
         dataOutputStream.writeUTF("search");
         dataOutputStream.flush();
+        System.out.println("peer sent command");
         dataOutputStream.writeUTF(fileName);
+        System.out.println("peer sent out file name");
         dataOutputStream.flush();
-        if (dataInputStream.readUTF().equals("notFound"))
-            return null;
-        pairIp = dataInputStream.readUTF();
-        return pairIp;
     }
 
     public void addFile(File file) {
         files.add(file);
+        try {
+            dataOutputStream.writeUTF("getFile");
+            dataOutputStream.writeUTF(file.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

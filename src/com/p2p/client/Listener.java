@@ -11,15 +11,17 @@ import java.net.Socket;
 public class Listener implements Runnable {
     private File file;
     private Socket pair;
+    private int listenPort;
 
-    public Listener(File file) {
+    public Listener(File file, int listenPort) {
         this.file = file;
+        this.listenPort = listenPort;
     }
 
     @Override
     public void run() {
         try {
-            ServerSocket miniServer = new ServerSocket(3434);
+            ServerSocket miniServer = new ServerSocket(listenPort);
             pair = miniServer.accept();
 
             DataOutputStream dataOutputStream = new DataOutputStream(pair.getOutputStream());

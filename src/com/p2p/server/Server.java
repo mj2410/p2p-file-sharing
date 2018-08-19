@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,9 +18,18 @@ public class Server {
 
     public Server() {
         handlers = new ArrayList<ClientHandler>();
+        try {
+            serverSocket = new ServerSocket(defaultPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         while (true){
-            try(Socket socket = serverSocket.accept()){
+            System.out.println("waiting for a client to be connected.");
+            try{
+                Socket socket = serverSocket.accept();
+                System.out.println("client connected.");
                 ClientHandler clientHandler = new ClientHandler(socket);
+                clientHandler.setIp();
                 handlers.add(clientHandler);
                 pool.execute(clientHandler);
             } catch (IOException e) {
@@ -31,4 +41,9 @@ public class Server {
     public static ArrayList<ClientHandler> getHandlers() {
         return handlers;
     }
+
+    public static void main(String[] args) {
+        new Server();
+    }
+
 }

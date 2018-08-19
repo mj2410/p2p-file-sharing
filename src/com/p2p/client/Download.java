@@ -10,10 +10,10 @@ public class Download implements Runnable {
     private String pairIp;
     private Socket p2p;
 
-    public Download(String pairIp) {
+    public Download(String pairIp, int port) {
         this.pairIp = pairIp;
         try {
-            p2p = new Socket(pairIp,3434);
+            p2p = new Socket(pairIp,port);
         } catch (IOException e) {
             e.printStackTrace();
         }
