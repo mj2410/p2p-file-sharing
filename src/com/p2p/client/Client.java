@@ -12,7 +12,7 @@ import java.net.UnknownHostException;
 
 public class Client {
     private Peer peer;
-    private static String location = "D://Mohammad/JTank.iml";
+    private static String location = System.getProperty("user.home") + File.separator + "SharedFiles";
     private String pairIp;
     private static String serverIp = "127.0.0.1";
     private static int port = 3000;
@@ -65,7 +65,6 @@ public class Client {
             Client client = new Client();
             client.connectServer();
             client.addFile(new File("D:/JTank/JTank.iml"));
-
             client.search("JTank");
             Thread.sleep(100);
             client.download();

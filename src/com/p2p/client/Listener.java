@@ -26,6 +26,7 @@ public class Listener implements Runnable {
 
             DataOutputStream dataOutputStream = new DataOutputStream(pair.getOutputStream());
             RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+            dataOutputStream.writeUTF(file.getName());
             byte[] buffer = new byte[1024];
             while (randomAccessFile.read(buffer) != -1) {
                 dataOutputStream.write(buffer);

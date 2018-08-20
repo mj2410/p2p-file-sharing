@@ -13,7 +13,7 @@ public class Download implements Runnable {
     public Download(String pairIp, int port) {
         this.pairIp = pairIp;
         try {
-            p2p = new Socket(pairIp,port);
+            p2p = new Socket(pairIp, port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -24,7 +24,10 @@ public class Download implements Runnable {
         byte[] buffer = new byte[1024];
         try {
             DataInputStream input = new DataInputStream(p2p.getInputStream());
-            RandomAccessFile randomAccessFile = new RandomAccessFile(new File(Client.getLocation()),"rw");
+            File file = new File(Client.getLocation());
+                if (!file.exists())
+                    file.mkdir();
+            RandomAccessFile randomAccessFile = new RandomAccessFile(new File(Client.getLocation() + "/" + input.readUTF()), "rw");
             while (input.read(buffer) != -1) {
                 randomAccessFile.write(buffer);
             }
